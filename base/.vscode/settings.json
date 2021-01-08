@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "/home/bony/python-virtual-environments/hubmap/bin/python3",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+}
