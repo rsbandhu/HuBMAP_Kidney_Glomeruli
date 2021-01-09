@@ -97,16 +97,14 @@ IoU_metric.add(pred_shape, targ_shape) # instance to inherit add function. edit 
 IoU_metric.compute_metric() 
 
 import time
-'''Print metric after each epoch. Still prototyping the code, but it runs without any network implemented just yet.'''
+'''Return metric after each epoch. Still prototyping the code, but it runs without any network implemented just yet.'''
 
-num_epochs = '''insert num of epochs'''
-def compute_metric(callback=None):
-    metric = IoU_metric.compute_metric() 
-    for i in range(num_epochs):
+def compute_metric(callback=None):   
         if callback: callback.before_compute(i) 
+        metric = IoU_metric.compute_metric()
         print("IoU score: {}".format(metric))
         time.sleep(1)
-        if callback: callback.after_compute(i, val=IoU_metric)        
+        if callback: callback.after_compute(i, val=metric)        
     return metric     
 
 class PrintCallback():
