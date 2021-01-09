@@ -95,19 +95,3 @@ targ_shape = torch.tensor([N, 1, 512, 512])
 IoU_metric = IoU() # metric instance to use during training
 IoU_metric.add(pred_shape, targ_shape) # instance to inherit add function. edit shapes accordingly to input dims
 IoU_metric.compute_metric() 
-
-import time
-'''Return metric after each epoch. Still prototyping the code, but it runs without any network implemented just yet.'''
-
-def compute_metric(callback=None):   
-        if callback: callback.before_compute(i) 
-        metric = IoU_metric.compute_metric()
-        print("IoU score: {}".format(metric))
-        time.sleep(1)
-        if callback: callback.after_compute(i, val=metric)        
-    return metric     
-
-class PrintCallback():
-    def __init__(self): pass
-    def before_compute(self, epoch): print(f"Epoch begin: {epoch}")
-    def after_compute(self, epoch): print(f"Epoch end: {epoch}: {val}")
