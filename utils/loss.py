@@ -48,35 +48,39 @@ def use_optimizer(network, config):
     return optimizer
 
 
-# To view loss after each epoch 
-num_epochs = ...
-n_batches = ...
-for epoch in range(2): # loop over the dataset multiple times
-    epoch_loss = 0.0
-    running_loss = 0.0
-    for i, data in enumerate(trainloader, 0): # in enumerate('''number of tile images'''):
-        # get the inputs
-        inputs, labels = data # here would be sample_batches
-
-        # zero the parameter gradients
+# This loop is for callbacks. The loop can be changed to compute metrics. For example, if using class IoU(metric.Metric) replace the loss function with 
+# these two lines: IoU_metric = IoU() then metric = IoU_metric.compute_metric(ypred)
+for epoch in epochs:
+    # put model in train mode
+    model.train()
+    epoch_loss = 0
+    for batch in dataloader:
+        # zero the gradient
         optimizer.zero_grad()
-
-        # forward + backward + optimize
-        outputs = net(inputs)
-        loss = criterion(outputs, labels) # change loss to soft dice
+        # get the data
+        data = sample_batch["data"] # these two 'data' lines are defined depending on how the data was structured
+        data = Variable(data) 
+        # compute prediction
+        ypred = model(data) 
+        # compute loss
+        loss = loss_function(ypred) # insert soft dice
+        # backpropagate loss
         loss.backward()
-        optimizer.step() 
-
-        epoch_loss += outputs.shape[0] * loss.item()
+        # apply backpropagation
+        optimizer.step()
+        # get the loss for this sample_batch
+        loss.data.item()
+        # add up loss over all the batches for a particular epoch
+        epoch_loss += loss.data.item()
 
         # print statistics
-        running_loss += loss.item()
-        if i % 2000 == 1999:    # print every 2000 mini-batches. THIS WOULD BE CHANGED ACCORDINGLY
+        running_loss += loss.data.item() * images.size(0) # change images to whatever you named the output image as
+        if i % 2000 == 1999:    # print every 2000 mini-batches. this is changed according to number of mini batches
             print('[%d, %5d] loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
     # print epoch loss
-    print(epoch+1, epoch_loss / len(trainset # change to name of train set))
+    print(epoch+1, epoch_loss) # if want average loss per epoch, do print(epoch+1, epoch_loss/len(training_set))
 
 print('Finished Training')
