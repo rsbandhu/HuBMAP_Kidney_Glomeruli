@@ -54,6 +54,7 @@ for epoch in epochs:
     # put model in train mode
     model.train()
     epoch_loss = 0
+    running_loss = 0
     for batch in dataloader:
         # zero the gradient
         optimizer.zero_grad()
