@@ -260,7 +260,7 @@ def reconstruct_images(self,dx=img_raw.shape[0],dy=img_raw.shape[1]):
             print("shape of image after reconstruction:: ", img_reconstructed.shape)
             print("shape of mask after reconstruction:: ", mask_reconstructed.shape)
     
-    return img_reconstructed
+    return img_reconstructed, mask_reconstructed
 
 # convert 2D array to rle
 def reconstruct_to_rle():
