@@ -241,7 +241,7 @@ if __name__ == "__main__":
 K = np.random.randint
 class Reconstruct:
 
-    def __init__(self, img_reshaped=np.ndarray([512, 512, 3]), mask_tiled=np.ndarray([K, 512, 512])):
+    def __init__(self, img_reshaped=np.ndarray([-1, 512, 512, 3]), mask_tiled=np.ndarray([K, 512, 512])):
         self.img_reshaped = img_reshaped
         self.mask_tiled = mask_tiled
 
