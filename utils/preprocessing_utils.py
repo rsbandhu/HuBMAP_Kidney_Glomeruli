@@ -236,3 +236,38 @@ def main():
     
 if __name__ == "__main__":
     main()
+    
+    
+original_img_count = 0
+original_idx = []
+def reconstruct_images(dx=img_raw.shape[0],dy=img_raw.shape[1]):
+    for i in range(n):
+        img_BGR = img[i, :, :, :]
+        if check_threshold(img_BGR, sat_threshold, pixcount_th):
+            original_img_count += 1
+            original_idx.append(i)
+            # remove the padding
+            img_depadded = (self.img_padded, [-self.pad_x, -self.pad_y])
+            mask_depadded = (self.mask_padded, [-self.pad_x, -self.pad_y])
+            img_depadded = np.squeeze(img_depadded.shape[0])
+            mask_depadded = np.squeeze(mask_depadded.shape[0])
+            # reshape
+            img_reconstructed_dxdy = img_depadded.shape(img_depadded.shape[0] * 512, img_depadded.shape[1] * 512)
+            img_reconstructed = img_reconstructed_dxdy.reshape(dx,dy,3)
+            mask_reconstructed_dxdy = mask_depadded.shape(mask_depadded.shape[0] * 512, mask_depadded.shape[1] * 512)
+            mask_reconstructed = mask_reconstructed_dxdy.reshape(dx, dy, 3)
+            
+            print("shape of image after reconstruction:: ", img_reconstructed.shape)
+            print("shape of mask after reconstruction:: ", mask_reconstructed.shape)
+
+
+# convert 2D array to rle
+def reconstruct_to_rle():
+    starts = np.where((mask_reconstructed[:-1] == 0) & (mask_reconstructed[1:] == 1))[0]
+    ends = np.where((mask_reconstructed[:-1] == 1) & (mask_reconstructed[1:] == 0))[0]
+    rle = np.zeros(2 * len(starts))
+    rle[::2] = starts
+    rle[1::2] = ends - starts
+    rle = rle.astype(int)
+    return rle
+
