@@ -240,7 +240,7 @@ if __name__ == "__main__":
     
 original_img_count = 0
 original_idx = []
-def reconstruct_images(dx=img_raw.shape[0],dy=img_raw.shape[1]):
+def reconstruct_images(self,dx=img_raw.shape[0],dy=img_raw.shape[1]):
     for i in range(n):
         img_BGR = img[i, :, :, :]
         if check_threshold(img_BGR, sat_threshold, pixcount_th):
@@ -259,7 +259,8 @@ def reconstruct_images(dx=img_raw.shape[0],dy=img_raw.shape[1]):
             
             print("shape of image after reconstruction:: ", img_reconstructed.shape)
             print("shape of mask after reconstruction:: ", mask_reconstructed.shape)
-
+    
+    return img_reconstructed
 
 # convert 2D array to rle
 def reconstruct_to_rle():
