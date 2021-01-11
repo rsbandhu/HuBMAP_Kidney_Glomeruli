@@ -238,29 +238,46 @@ if __name__ == "__main__":
     main()
     
     
-original_img_count = 0
-original_idx = []
-def reconstruct_images(self,dx=img_raw.shape[0],dy=img_raw.shape[1]):
-    for i in range(n):
-        img_BGR = img[i, :, :, :]
-        if check_threshold(img_BGR, sat_threshold, pixcount_th):
-            original_img_count += 1
-            original_idx.append(i)
+K = np.random.randint
+class Reconstruct:
+
+    def __init__(self, img_reshaped=np.ndarray([512, 512, 3]), mask_tiled=np.ndarray([K, 512, 512])):
+        self.img_reshaped = img_reshaped
+        self.mask_tiled = mask_tiled
+
+    def reconstruct_images(self,reduce=4,sz=256):
+        original_img_count = 0
+        original_idx = []
+        n = [np.ndarray([K, 512, 512]), np.ndarray([K, 512, 512]), np.ndarray([K, 512, 512])]
+        for i in range(len(n)):
+            img_BGR = img[i, :, :, :]
+            if check_threshold(img_BGR, sat_threshold, pixcount_th):
+                original_img_count += 1
+                original_idx.append(i)
             # remove the padding
-            img_depadded = (self.img_padded, [-self.pad_x, -self.pad_y])
-            mask_depadded = (self.mask_padded, [-self.pad_x, -self.pad_y])
-            img_depadded = np.squeeze(img_depadded.shape[0])
-            mask_depadded = np.squeeze(mask_depadded.shape[0])
+            pad0 = (reduce * sz - shape[0] % (reduce * sz)) % (reduce * sz)
+            pad1 = (reduce * sz - shape[1] % (reduce * sz)) % (reduce * sz)
+            self.pad_x = (pad0 * 2, pad0+pad0*2)
+            self.pad_y = (pad1*2, pad1+pad1*2)
+            img_reshaped = -np.pad(img_reshaped, [self.pad_x, self.pad_y, (0, 0)], constant_values=0)
+            # img_padded = (self.img_padded, [-self.pad_x, -self.pad_y])
+            # mask_padded = (self.mask_padded, [-self.pad_x, -self.pad_y])
+            mask_tiled = -np.pad(mask_tiled, [self.pad_x, self.pad_y], constant_values=0)
+            img_padded = np.squeeze(img_reshaped.shape[0])
+            mask_padded = np.squeeze(mask_tiled.shape[0])
             # reshape
-            img_reconstructed_dxdy = img_depadded.shape(img_depadded.shape[0] * 512, img_depadded.shape[1] * 512)
-            img_reconstructed = img_reconstructed_dxdy.reshape(dx,dy,3)
-            mask_reconstructed_dxdy = mask_depadded.shape(mask_depadded.shape[0] * 512, mask_depadded.shape[1] * 512)
-            mask_reconstructed = mask_reconstructed_dxdy.reshape(dx, dy, 3)
-            
-            print("shape of image after reconstruction:: ", img_reconstructed.shape)
-            print("shape of mask after reconstruction:: ", mask_reconstructed.shape)
-    
-    return img_reconstructed, mask_reconstructed
+            img_reconstruct = img_reshaped.reshape(img_reshaped.shape[0] * sz, sz//sz, img_reshaped.shape[1] * sz, 3)
+            #img_reconstructed = img_reconstructed_dxdy.reshape(img_reconstructed_dxdy.shape[0],
+                                                               #img_reconstructed_dxdy.shape[1], 3)
+            mask_reconstruct = mask_tiled.reshape(mask_tiled.shape[0] * sz, sz//sz, mask_tiled.shape[1] * sz, sz//sz)
+            #tile_reconstructed = tile_reconstructed_dxdy.reshape(tile_reconstructed_dxdy.shape[0],
+                                                                 #tile_reconstructed_dxdy.shape[1], 3)
+
+            print("shape of image after reconstruction:: ", img_reconstruct.shape)
+            print("shape of mask after reconstruction:: ", mask_reconstruct.shape)
+
+        return img_reconstruct, mask_reconstruct
+
 
 # convert 2D array to rle
 def reconstruct_to_rle():
