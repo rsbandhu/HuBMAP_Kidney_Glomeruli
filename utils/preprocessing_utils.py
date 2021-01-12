@@ -241,11 +241,11 @@ if __name__ == "__main__":
 
 class Reconstruct:
 
-    def __init__(self, img_reshaped=np.ndarray([512, 512, 3]), mask_tiled=np.ndarray([K, 512, 512])):
+    def __init__(self, img_reshaped, mask_tiled):
         self.img_reshaped = img_reshaped
         self.mask_tiled = mask_tiled
 
-    def reconstruct_images(self,reduce=4,sz=256):
+    def reconstruct_images(self,reduce=1,sz=512):
         original_img_count = 0
         original_idx = []
        
