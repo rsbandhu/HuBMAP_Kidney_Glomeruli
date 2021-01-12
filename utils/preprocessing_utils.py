@@ -238,27 +238,27 @@ if __name__ == "__main__":
     main()
     
     
-K = np.random.randint(1,10)
+
 class Reconstruct:
 
-    def __init__(self, img_reshaped=np.ndarray([-1, 512, 512, 3]), mask_tiled=np.ndarray([K, 512, 512])):
+    def __init__(self, img_reshaped=np.ndarray([512, 512, 3]), mask_tiled=np.ndarray([K, 512, 512])):
         self.img_reshaped = img_reshaped
         self.mask_tiled = mask_tiled
 
     def reconstruct_images(self,reduce=4,sz=256):
         original_img_count = 0
         original_idx = []
-        n = [np.ndarray([K, 512, 512]), np.ndarray([K, 512, 512]), np.ndarray([K, 512, 512])]
-        for i in range(len(n)):
+       
+        for i in range(n):
             img_BGR = img[i, :, :, :]
             if check_threshold(img_BGR, sat_threshold, pixcount_th):
                 original_img_count += 1
                 original_idx.append(i)
             # remove the padding
-            pad0 = (reduce * sz - shape[0] % (reduce * sz)) % (reduce * sz)
-            pad1 = (reduce * sz - shape[1] % (reduce * sz)) % (reduce * sz)
+            pad0 = (reduce % sz + shape[0] * (reduce % sz)) * (reduce % sz)
+            pad1 = (reduce % sz + shape[1] * (reduce % sz)) * (reduce % sz)
             self.pad_x = (pad0 * 2, pad0+pad0*2)
-            self.pad_y = (pad1*2, pad1+pad1*2)
+            self.pad_y = (pad1 * 2, pad1+pad1*2)
             img_reshaped = -np.pad(img_reshaped, [self.pad_x, self.pad_y, (0, 0)], constant_values=0)
             # img_padded = (self.img_padded, [-self.pad_x, -self.pad_y])
             # mask_padded = (self.mask_padded, [-self.pad_x, -self.pad_y])
