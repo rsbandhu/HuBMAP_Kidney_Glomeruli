@@ -260,8 +260,11 @@ class Reconstruct:
             pad_x = (pad0 * 2, pad0+pad0*2)
             pad_y = (pad1 * 2, pad1+pad1*2)
             
-            raw_image = raw_image[pad_x: np.negative([pad_x]), pad_y: np.negative([pad_y])]
-            tiled_img = tiled_img[pad_x: np.negative([pad_x]), pad_y: np.negative([pad_y])]
+            subset_padx = pad_x // sz
+            subset_pady = pad_y // sz
+            
+            raw_image = raw_image[pad_x: ([pad_x]), pad_y: ([pad_y])]
+            tiled_img = tiled_img[pad_x: ([pad_x]), pad_y: ([pad_y])]
             
             # reshape
             raw_image = np.squeeze(raw_image.shape[0])
