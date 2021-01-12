@@ -259,13 +259,13 @@ class Reconstruct:
             pad1 = (reduce % sz + shape[1] * (reduce % sz)) * (reduce % sz)
             self.pad_x = (pad0 * 2, pad0+pad0*2)
             self.pad_y = (pad1 * 2, pad1+pad1*2)
-            img_reshaped = -np.pad(img_reshaped, [self.pad_x, self.pad_y, (0, 0)], constant_values=0)
-            # img_padded = (self.img_padded, [-self.pad_x, -self.pad_y])
-            # mask_padded = (self.mask_padded, [-self.pad_x, -self.pad_y])
-            mask_tiled = -np.pad(mask_tiled, [self.pad_x, self.pad_y], constant_values=0)
+            img_reshaped = np.pad(img_reshaped, [self.pad_x, self.pad_y, (0, 0)], constant_values=0)[pad_x: -pad_x, pad_y: -pad_y]
+            mask_tiled = np.pad(mask_tiled, [self.pad_x, self.pad_y], constant_values=0)[pad_x: -pad_x, pad_y: -pad_y]
+             
+            # reshape
             img_padded = np.squeeze(img_reshaped.shape[0])
             mask_padded = np.squeeze(mask_tiled.shape[0])
-            # reshape
+           
             img_reconstruct = img_reshaped.reshape(img_reshaped.shape[0] * sz, sz//sz, img_reshaped.shape[1] * sz, 3)
             #img_reconstructed = img_reconstructed_dxdy.reshape(img_reconstructed_dxdy.shape[0],
                                                                #img_reconstructed_dxdy.shape[1], 3)
