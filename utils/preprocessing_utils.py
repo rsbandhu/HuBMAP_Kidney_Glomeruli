@@ -255,21 +255,22 @@ class Reconstruct:
                 original_img_count += 1
                 original_idx.append(i)
             # remove the padding
-            pad0 = (reduce % sz + shape[0] * (reduce % sz)) * (reduce % sz)
-            pad1 = (reduce % sz + shape[1] * (reduce % sz)) * (reduce % sz)
-            self.pad_x = (pad0 * 2, pad0+pad0*2)
-            self.pad_y = (pad1 * 2, pad1+pad1*2)
-            img_depadded = np.pad(self.img_reshaped, [self.pad_x, self.pad_y], constant_values=[self.pad_x: -self.pad_x, self.pad_y: -self.pad_y])
-            tiled_mask_depadded = np.pad(self.mask_tiled, [self.pad_x, self.pad_y], constant_values=[self.pad_x: -self.pad_x, self.pad_y: -self.pad_y])
-             
+            pad0 = (reduce*sz + raw_img_shape[0] * (reduce*sz)) * (reduce*sz)
+            pad1 = (reduce*sz + raw_img_shape[1] * (reduce*sz)) * (reduce*sz)
+            pad_x = (pad0 * 2, pad0+pad0*2)
+            pad_y = (pad1 * 2, pad1+pad1*2)
+            
+            raw_image = raw_image[pad_x: np.negative([pad_x]), pad_y: np.negative([pad_y])]
+            tiled_img = tiled_img[pad_x: np.negative([pad_x]), pad_y: np.negative([pad_y])]
+            
             # reshape
-            img_reconstruct = np.squeeze(img_depadded.shape[0])
-            tile_reconstruct = np.squeeze(tiled_mask_depadded.shape[0])
+            raw_image = np.squeeze(raw_image.shape[0])
+            tiled_img = np.squeeze(tiled_img.shape[0])
            
-            img_reconstruct = img_reconstruct.reshape(img_reconstruct.shape[0] % sz, sz*sz, img_reconstruct.shape[1] * sz, 3)
+            img_reconstruct = raw_image.reshape(raw_image.shape[0] % sz, sz*sz, raw_image.shape[1] * sz, 3)
             #img_reconstructed = img_reconstructed_dxdy.reshape(img_reconstructed_dxdy.shape[0],
                                                                #img_reconstructed_dxdy.shape[1], 3)
-            tile_reconstruct = tile_reconstruct.reshape(tile_reconstruct.shape[0] % sz, sz*sz, tile_reconstruct.shape[1] * sz, sz%sz)
+            tile_reconstruct = tiled_img.reshape(tiled_img.shape[0] % sz, sz*sz, tiled_img.shape[1] * sz, sz%sz)
             #tile_reconstructed = tile_reconstructed_dxdy.reshape(tile_reconstructed_dxdy.shape[0],
                                                                  #tile_reconstructed_dxdy.shape[1], 3)
 
