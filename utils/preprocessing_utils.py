@@ -259,24 +259,24 @@ class Reconstruct:
             pad1 = (reduce % sz + shape[1] * (reduce % sz)) * (reduce % sz)
             self.pad_x = (pad0 * 2, pad0+pad0*2)
             self.pad_y = (pad1 * 2, pad1+pad1*2)
-            img_reshaped = np.pad(img_reshaped, [self.pad_x, self.pad_y, (0, 0)], constant_values=0)[pad_x: -pad_x, pad_y: -pad_y]
-            mask_tiled = np.pad(mask_tiled, [self.pad_x, self.pad_y], constant_values=0)[pad_x: -pad_x, pad_y: -pad_y]
+            img_depadded = np.pad(self.img_reshaped, [self.pad_x, self.pad_y], constant_values=[self.pad_x: -self.pad_x, self.pad_y: -self.pad_y])
+            tiled_mask_depadded = np.pad(self.mask_tiled, [self.pad_x, self.pad_y], constant_values=[self.pad_x: -self.pad_x, self.pad_y: -self.pad_y])
              
             # reshape
-            img_padded = np.squeeze(img_reshaped.shape[0])
-            mask_padded = np.squeeze(mask_tiled.shape[0])
+            img_reconstruct = np.squeeze(img_depadded.shape[0])
+            tile_reconstruct = np.squeeze(tiled_mask_depadded.shape[0])
            
-            img_reconstruct = img_reshaped.reshape(img_reshaped.shape[0] * sz, sz//sz, img_reshaped.shape[1] * sz, 3)
+            img_reconstruct = img_reconstruct.reshape(img_reconstruct.shape[0] % sz, sz*sz, img_reconstruct.shape[1] * sz, 3)
             #img_reconstructed = img_reconstructed_dxdy.reshape(img_reconstructed_dxdy.shape[0],
                                                                #img_reconstructed_dxdy.shape[1], 3)
-            mask_reconstruct = mask_tiled.reshape(mask_tiled.shape[0] * sz, sz//sz, mask_tiled.shape[1] * sz, sz//sz)
+            tile_reconstruct = tile_reconstruct.reshape(tile_reconstruct.shape[0] % sz, sz*sz, tile_reconstruct.shape[1] * sz, sz%sz)
             #tile_reconstructed = tile_reconstructed_dxdy.reshape(tile_reconstructed_dxdy.shape[0],
                                                                  #tile_reconstructed_dxdy.shape[1], 3)
 
             print("shape of image after reconstruction:: ", img_reconstruct.shape)
-            print("shape of mask after reconstruction:: ", mask_reconstruct.shape)
+            print("shape of mask after reconstruction:: ", tile_reconstruct.shape)
 
-        return img_reconstruct, mask_reconstruct
+        return img_reconstruct, tile_reconstruct
 
 
 # convert 2D array to rle
