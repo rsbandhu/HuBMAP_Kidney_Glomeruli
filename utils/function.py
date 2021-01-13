@@ -81,7 +81,3 @@ def reconstructed_img(img_raw, mask_2d):
                 shape = original_image_reconstructed.shape
 
     return original_image_reconstructed, shape # expected output is original image reconstructed (dx, dy, 3)
-
-testraw = np.ndarray([512, 512])
-testmask = np.ndarray([512, 512])
-print(reconstructed_img(testraw, testmask))
