@@ -32,11 +32,7 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
         
-import torch
-import numpy as np
-from metric import metric
-from metric.confusionmatrix import ConfusionMatrix
-'''Imports needed to compute IoU metric'''
+
 
 class IoU(metric.Metric):
     
@@ -88,10 +84,3 @@ class IoU(metric.Metric):
 
         return iou, np.nanmean(iou)
     
-'''ADD PREDICTED and TARGET tensor shapes. '''
-pred_shape = torch.tensor([N, '''1 or 3?''', 512, 512])
-targ_shape = torch.tensor([N, 1, 512, 512])
-    
-IoU_metric = IoU() # metric instance to use during training
-IoU_metric.add(pred_shape, targ_shape) # instance to inherit add function. edit shapes accordingly to input dims
-IoU_metric.compute_metric() 
