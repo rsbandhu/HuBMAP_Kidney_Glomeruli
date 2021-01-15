@@ -1,13 +1,13 @@
-import numpy as np
-import pandas as pd 
 import os, sys
 import tifffile as tiff
 import zipfile
 import json
 import pickle
+import pandas as pd
+import numpy as np
 
 import preprocessing_utils as utils
-
+#import preprocessing_utils_old as utils
 #sys.path.append('/home/bony/python-virtual-environments/hubmap/lib/python3.7/site-packages')
 
 import cv2
@@ -155,6 +155,33 @@ class Image():
         rle = rle.astype(int)
         return rle
 
+    def reconstruct_original_from_padded_tiled_image(self, tiled_image):
+        n = tiled_image.shape[0]
+        tile_size = self.tile_size
+        (pad_x_l, pad_x_r) = self.pad_x
+        (pad_y_l, pad_y_r) = self.pad_y
+
+        dx_padded = self.dx + pad_x_l + pad_x_r
+        dy_padded = self.dy + pad_y_l + pad_y_r
+
+        n_x = dx_padded //tile_size
+        n_y = dy_padded//tile_size
+
+        assert (n == n_x*n_y), "dimensions don't match"
+
+        image_untiled = tiled_image.reshape(n_x, n_y, tile_size, tile_size, 3)
+        image_untiled = image_untiled.transpose(0,2,1,3,4)
+        image_padded = image_untiled.reshape(n_x*tile_size, n_y*tile_size, 3)
+
+        image_unpadded = image_padded[pad_x_l: - pad_x_r, pad_y_l: -pad_y_r, :]
+
+        assert (self.dx == image_unpadded.shape[0]), \
+            "shape of original image doesn't match with unpadded image along dim = 0"
+        assert (self.dy == image_unpadded.shape[1]), \
+            "shape of original image doesn't match with unpadded image along dim = 1"
+
+        return image_unpadded
+
 def main():
     #setting parameters for tiling and thresholding raw images
     image_size_reduced = 512
@@ -164,19 +191,21 @@ def main():
     #set the directories for input raw images and output tiled images
     datadir_train = '/media/bony/Ganga_HDD_3TB/Ganges_Backup/Machine_Learning/HuBMAP_Hacking_Kidney/hubmap-kidney-segmentation/train'
     masks_train = '/media/bony/Ganga_HDD_3TB/Ganges_Backup/Machine_Learning/HuBMAP_Hacking_Kidney/hubmap-kidney-segmentation/train.csv'
+    '''
     tiled_threshold_img_dir = os.path.join(datadir_train, 'tiled_thresholded_'+str(image_size_reduced))
     if not os.path.exists(tiled_threshold_img_dir):
         os.makedirs(tiled_threshold_img_dir)
-
+    
     #read the mask of the images in rle format
     df_train_masks = pd.read_csv(masks_train).set_index('id')
-
+    '''
     #get a list of all the raw images
     os.chdir(datadir_train)
     raw_image_files = [f for f in os.listdir(datadir_train) if "tiff" in f]
 
     mask_tile_dict = {}
 
+    '''
     count = 0
     for f in raw_image_files:
         raw_file_name = f.split('.')[0]
@@ -203,6 +232,23 @@ def main():
     tiled_mask_rle_file = open(os.path.join(tiled_threshold_img_dir, 'tiled_mask_rle'), 'wb')
     pickle.dump(mask_tile_dict, tiled_mask_rle_file)
     tiled_mask_rle_file.close()
+    
+    '''
+
+    img_index = 0
+    print(raw_image_files)
+    f = raw_image_files[img_index]
+    raw_file_name = f.split( '.' )[0]
+    print(raw_file_name)
+
+    img_raw = tiff.imread( os.path.join( datadir_train, f ) )
+    raw_img = Image( img_raw, img_name=raw_file_name )
+
+    raw_img.split_image_mask_into_tiles(reduce=1, sz=512)
+    img_1 = raw_img.tiled_img
+
+    raw_img.reconstruct_original_from_padded_tiled_image(tiled_image )
+
 
 if __name__ == "__main__":
     main()
