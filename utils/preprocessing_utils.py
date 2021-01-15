@@ -280,8 +280,7 @@ class Reconstruct:
             print("shape of image after reconstruction:: ", img_reconstruct.shape)
             print("shape of mask after reconstruction:: ", tile_reconstruct.shape)
 
-        return img_reconstruct, tile_reconstruct
-
+        return img_reconstruct
 
 # convert 2D array to rle
 def reconstruct_to_rle():
@@ -292,4 +291,3 @@ def reconstruct_to_rle():
     rle[1::2] = ends - starts
     rle = rle.astype(int)
     return rle
-
