@@ -291,3 +291,539 @@ def reconstruct_to_rle():
     rle[1::2] = ends - starts
     rle = rle.astype(int)
     return rle
+
+
+smalllist = [
+    "Blur",
+    "CenterCrop",
+    "HorizontalFlip",
+    "VerticalFlip",
+    "Normalize",
+    "Transpose",
+    "RandomGamma",
+    "OpticalDistortion",
+    "GridDistortion",
+    "RandomGridShuffle",
+    "HueSaturationValue",
+    "PadIfNeeded",
+    "RGBShift",
+    "RandomBrightness",
+    "RandomContrast",
+    "MotionBlur",
+    "MedianBlur",
+    "GaussianBlur",
+    "GaussNoise",
+    "GlassBlur",
+    "CLAHE",
+    "ChannelShuffle",
+    "ToGray",
+    "ToSepia",
+    "JpegCompression",
+    "ImageCompression",
+    "Cutout",
+    "CoarseDropout",
+    "ToFloat",
+    "FromFloat",
+    "RandomBrightnessContrast",
+    "RandomSnow",
+    "RandomRain",
+    "RandomFog",
+    "RandomSunFlare",
+    "RandomShadow",
+    "Lambda",
+    "ChannelDropout",
+    "ISONoise",
+    "Solarize",
+    "Equalize",
+    "Posterize",
+    "Downscale",
+    "MultiplicativeNoise",
+    "FancyPCA",
+    "MaskDropout",
+    "GridDropout",
+    "ColorJitter",
+    "ElasticTransform",
+    "CropNonEmptyMaskIfExists",
+    "IAAAffine",       
+    "IAACropAndPad",       
+    "IAAFliplr",  
+    "IAAFlipud",    
+    "IAAPerspective",  
+    "IAAPiecewiseAffine",
+    "LongestMaxSize",  
+    "NoOp",
+    "RandomCrop",
+    "RandomResizedCrop",
+    "RandomScale",
+    "RandomSizedCrop",
+    "Resize",
+    "Rotate",
+    "ShiftScaleRotate",
+    "SmallestMaxSize"
+]
+
+from albumentations import (
+ Blur,
+ CenterCrop,
+ HorizontalFlip,
+ VerticalFlip,
+ Normalize,
+ Transpose,
+ RandomGamma,
+ OpticalDistortion,
+ GridDistortion,
+ RandomGridShuffle,
+ HueSaturationValue,
+ PadIfNeeded,
+ RGBShift,
+ RandomBrightness,
+ RandomContrast,
+ MotionBlur,
+ MedianBlur,
+ GaussianBlur,
+ GaussNoise,
+ GlassBlur,
+ CLAHE,
+ ChannelShuffle,
+ ToGray,
+ ToSepia,
+ JpegCompression,
+ ImageCompression,
+ Cutout,
+ CoarseDropout,
+ ToFloat,
+ FromFloat,
+ RandomBrightnessContrast,
+ RandomSnow,
+ RandomRain,
+ RandomFog,
+ RandomSunFlare,
+ RandomShadow,
+ Lambda,
+ ChannelDropout,
+ ISONoise,
+ Solarize,
+ Equalize,
+ Posterize,
+ Downscale,
+ MultiplicativeNoise,
+ FancyPCA,
+ MaskDropout,
+ GridDropout,
+ ColorJitter,
+ ElasticTransform,
+ CropNonEmptyMaskIfExists,
+ IAAAffine,       
+ IAACropAndPad,       
+ IAAFliplr,  
+ IAAFlipud,    
+ IAAPerspective,  
+ IAAPiecewiseAffine,
+ LongestMaxSize,  
+ NoOp,
+ RandomCrop,
+ RandomResizedCrop,
+ RandomScale,
+ RandomSizedCrop,
+ Resize,
+ Rotate,
+ ShiftScaleRotate,
+ SmallestMaxSize 
+)
+
+import albumentations
+
+def transform(image, mask): 
+    
+
+    x, y = image, mask
+    mask_density = np.count_nonzero(y)
+
+        ## Augmenting only images with Gloms
+    if(mask_density>0):
+        try:
+            h, w, c = x.shape
+        except Exception as e:
+            image = image[:-1]
+            x, y = read_single(image, mask)
+            h, w, c = x.shape
+
+        aug = Blur(p=1, blur_limit = 3)
+        augmented = aug(image=x, mask=y)
+        x0 = augmented['image']
+        y0 = augmented['mask']
+        
+    #    aug = CenterCrop(p=1, height=32, width=32)
+    #    augmented = aug(image=x, mask=y)
+    #    x1 = augmented['image']
+    #    y1 = augmented['mask']
+            
+            ## Horizontal Flip
+        aug = HorizontalFlip(p=1)
+        augmented = aug(image=x, mask=y)
+        x2 = augmented['image']
+        y2 = augmented['mask']
+            
+        aug = VerticalFlip(p=1)
+        augmented = aug(image=x, mask=y)
+        x3 = augmented['image']
+        y3 = augmented['mask']
+            
+      #      aug = Normalize(p=1)
+      #      augmented = aug(image=x, mask=y)
+      #      x4 = augmented['image']
+      #      y4 = augmented['mask']
+            
+        aug = Transpose(p=1)
+        augmented = aug(image=x, mask=y)
+        x5 = augmented['image']
+        y5 = augmented['mask']
+            
+        aug = RandomGamma(p=1)
+        augmented = aug(image=x, mask=y)
+        x6 = augmented['image']
+        y6 = augmented['mask']
+            
+            ## Optical Distortion
+        aug = OpticalDistortion(p=1, distort_limit=2, shift_limit=0.5)
+        augmented = aug(image=x, mask=y)
+        x7 = augmented['image']
+        y7 = augmented['mask']
+
+            ## Grid Distortion
+        aug = GridDistortion(p=1)
+        augmented = aug(image=x, mask=y)
+        x8 = augmented['image']
+        y8 = augmented['mask']
+            
+        aug = RandomGridShuffle(p=1)
+        augmented = aug(image=x, mask=y)
+        x9 = augmented['image']
+        y9 = augmented['mask']  
+            
+        aug = HueSaturationValue(p=1)
+        augmented = aug(image=x, mask=y)
+        x10 = augmented['image']
+        y10 = augmented['mask']
+            
+#        aug = PadIfNeeded(p=1)
+#        augmented = aug(image=x, mask=y)
+#        x11 = augmented['image']
+#        y11 = augmented['mask'] 
+            
+        aug = RGBShift(p=1)
+        augmented = aug(image=x, mask=y)
+        x12 = augmented['image']
+        y12 = augmented['mask']
+            
+            ## Random Brightness 
+        aug = RandomBrightness(p=1)
+        augmented = aug(image=x, mask=y)
+        x13 = augmented['image']
+        y13 = augmented['mask']
+            
+            ## Random  Contrast
+        aug = RandomContrast(p=1)
+        augmented = aug(image=x, mask=y)
+        x14 = augmented['image']
+        y14 = augmented['mask']
+            
+        #aug = MotionBlur(p=1)
+        #augmented = aug(image=x, mask=y)
+         #   x15 = augmented['image']
+          #  y15 = augmented['mask']
+            
+        aug = MedianBlur(p=1, blur_limit=5)
+        augmented = aug(image=x, mask=y)
+        x16 = augmented['image']
+        y16 = augmented['mask']
+            
+        aug = GaussianBlur(p=1, blur_limit=3)
+        augmented = aug(image=x, mask=y)
+        x17 = augmented['image']
+        y17 = augmented['mask']
+            
+        aug = GaussNoise(p=1)
+        augmented = aug(image=x, mask=y)
+        x18 = augmented['image']
+        y18 = augmented['mask']
+        
+                    
+        aug = GlassBlur(p=1)
+        augmented = aug(image=x, mask=y)
+        x19 = augmented['image']
+        y19 = augmented['mask']
+            
+        aug = CLAHE(clip_limit=1.0, tile_grid_size=(8, 8), always_apply=False, p=1)
+        augmented = aug(image=x, mask=y)
+        x20 = augmented['image']
+        y20 = augmented['mask']
+            
+        aug = ChannelShuffle(p=1)
+        augmented = aug(image=x, mask=y)
+        x21 = augmented['image']
+        y21 = augmented['mask']
+            
+        aug = ToGray(p=1)
+        augmented = aug(image=x, mask=y)
+        x22 = augmented['image']
+        y22 = augmented['mask']
+                      
+        aug = ToSepia(p=1)
+        augmented = aug(image=x, mask=y)
+        x23 = augmented['image']
+        y23 = augmented['mask']
+            
+        aug = JpegCompression(p=1)
+        augmented = aug(image=x, mask=y)
+        x24 = augmented['image']
+        y24 = augmented['mask']
+            
+        aug = ImageCompression(p=1)
+        augmented = aug(image=x, mask=y)
+        x25 = augmented['image']
+        y25 = augmented['mask']
+            
+        aug = Cutout(p=1)
+        augmented = aug(image=x, mask=y)
+        x26 = augmented['image']
+        y26 = augmented['mask']
+            
+ #       aug = CoarseDropout(p=1, max_holes=8, max_height=32, max_width=32)
+ #       augmented = aug(image=x, mask=y)
+ #       x27 = augmented['image']
+ #       y27 = augmented['mask']
+            
+ #       aug = ToFloat(p=1)
+ #       augmented = aug(image=x, mask=y)
+ #       x28 = augmented['image']
+ #       y28 = augmented['mask']
+            
+        aug = FromFloat(p=1)
+        augmented = aug(image=x, mask=y)
+        x29 = augmented['image']
+        y29 = augmented['mask']
+            
+            ## Random Brightness and Contrast
+        aug = RandomBrightnessContrast(p=1)
+        augmented = aug(image=x, mask=y)
+        x30 = augmented['image']
+        y30 = augmented['mask']
+            
+        aug = RandomSnow(p=1)
+        augmented = aug(image=x, mask=y)
+        x31 = augmented['image']
+        y31 = augmented['mask']
+            
+        aug = RandomRain(p=1)
+        augmented = aug(image=x, mask=y)
+        x32 = augmented['image']
+        y32 = augmented['mask']
+            
+        aug = RandomFog(p=1)
+        augmented = aug(image=x, mask=y)
+        x33 = augmented['image']
+        y33 = augmented['mask']
+            
+        aug = RandomSunFlare(p=1)
+        augmented = aug(image=x, mask=y)
+        x34 = augmented['image']
+        y34 = augmented['mask']
+            
+        aug = RandomShadow(p=1)
+        augmented = aug(image=x, mask=y)
+        x35 = augmented['image']
+        y35 = augmented['mask']
+            
+        aug = Lambda(p=1)
+        augmented = aug(image=x, mask=y)
+        x36 = augmented['image']
+        y36 = augmented['mask']
+            
+        aug = ChannelDropout(p=1)
+        augmented = aug(image=x, mask=y)
+        x37 = augmented['image']
+        y37 = augmented['mask']
+            
+        aug = ISONoise(p=1)
+        augmented = aug(image=x, mask=y)
+        x38 = augmented['image']
+        y38 = augmented['mask']
+            
+        aug = Solarize(p=1)
+        augmented = aug(image=x, mask=y)
+        x39 = augmented['image']
+        y39 = augmented['mask']
+            
+        aug = Equalize(p=1)
+        augmented = aug(image=x, mask=y)
+        x40 = augmented['image']
+        y40 = augmented['mask']
+            
+        aug = Posterize(p=1)
+        augmented = aug(image=x, mask=y)
+        x41 = augmented['image']
+        y41 = augmented['mask']
+            
+        aug = Downscale(p=1)
+        augmented = aug(image=x, mask=y)
+        x42 = augmented['image']
+        y42 = augmented['mask']
+            
+        aug = MultiplicativeNoise(p=1)
+        augmented = aug(image=x, mask=y)
+        x43 = augmented['image']
+        y43 = augmented['mask']
+            
+        aug = FancyPCA(p=1)
+        augmented = aug(image=x, mask=y)
+        x44 = augmented['image']
+        y44 = augmented['mask']
+            
+ #       aug = MaskDropout(p=1)
+ #       augmented = aug(image=x, mask=y)
+ #       x45 = augmented['image']
+ #       y45 = augmented['mask']
+            
+        aug = GridDropout(p=1)
+        augmented = aug(image=x, mask=y)
+        x46 = augmented['image']
+        y46 = augmented['mask']
+            
+        aug = ColorJitter(p=1)
+        augmented = aug(image=x, mask=y)
+        x47 = augmented['image']
+        y47 = augmented['mask']
+            
+            ## ElasticTransform
+        aug = ElasticTransform(p=1, alpha=120, sigma=512*0.05, alpha_affine=512*0.03)
+        augmented = aug(image=x, mask=y)
+        x50 = augmented['image']
+        y50 = augmented['mask']
+            
+        aug = CropNonEmptyMaskIfExists(p=1, height=22, width=32)
+        augmented = aug(image=x, mask=y)
+        x51 = augmented['image']
+        y51 = augmented['mask']
+
+        aug = IAAAffine(p=1)
+        augmented = aug(image=x, mask=y)
+        x52 = augmented['image']
+        y52 = augmented['mask']
+            
+#        aug = IAACropAndPad(p=1)
+#        augmented = aug(image=x, mask=y)
+#        x53 = augmented['image']
+#        y53 = augmented['mask']
+            
+        aug = IAAFliplr(p=1)
+        augmented = aug(image=x, mask=y)
+        x54 = augmented['image']
+        y54 = augmented['mask']
+            
+        aug = IAAFlipud(p=1)
+        augmented = aug(image=x, mask=y)
+        x55 = augmented['image']
+        y55 = augmented['mask']
+            
+        aug = IAAPerspective(p=1)
+        augmented = aug(image=x, mask=y)
+        x56 = augmented['image']
+        y56 = augmented['mask']
+            
+        aug = IAAPiecewiseAffine(p=1)
+        augmented = aug(image=x, mask=y)
+        x57 = augmented['image']
+        y57 = augmented['mask']
+            
+        aug = LongestMaxSize(p=1)
+        augmented = aug(image=x, mask=y)
+        x58 = augmented['image']
+        y58 = augmented['mask']
+            
+        aug = NoOp(p=1)
+        augmented = aug(image=x, mask=y)
+        x59 = augmented['image']
+        y59 = augmented['mask']
+            
+            
+ #       aug = RandomCrop(p=1, height=22, width=22)
+ #       augmented = aug(image=x, mask=y)
+ #       x61 = augmented['image']
+ #       y61 = augmented['mask']
+            
+  #      aug = RandomResizedCrop(p=1, height=22, width=20)
+  #      augmented = aug(image=x, mask=y)
+  #      x63 = augmented['image']
+  #      y63 = augmented['mask']
+            
+        aug = RandomScale(p=1)
+        augmented = aug(image=x, mask=y)
+        x64 = augmented['image']
+        y64 = augmented['mask']
+    
+            
+  #      aug = RandomSizedCrop(p=1, height=22, width=20, min_max_height = [32,32])
+  #      augmented = aug(image=x, mask=y)
+  #      x66 = augmented['image']
+  #      y66 = augmented['mask']
+            
+  #      aug = Resize(p=1, height=22, width=20)
+  #      augmented = aug(image=x, mask=y)
+  #      x67 = augmented['image']
+  #      y67 = augmented['mask']
+            
+        aug = Rotate(p=1)
+        augmented = aug(image=x, mask=y)
+        x68 = augmented['image']
+        y68 = augmented['mask']
+            
+        aug = ShiftScaleRotate(p=1)
+        augmented = aug(image=x, mask=y)
+        x69 = augmented['image']
+        y69 = augmented['mask']
+            
+        aug = SmallestMaxSize(p=1)
+        augmented = aug(image=x, mask=y)
+        x70 = augmented['image']
+        y70 = augmented['mask']
+
+        images_aug.extend([
+            x0, x2, x3, x5, x6,
+            x7, x8, x9, x10, x12,
+            x13, x14, x16, x17, x18, x19, x20,x21, x22,
+            x23, x24, x25, x26, x29, x30,x31, x32, x33, x34, x35, x36,
+            x37, x38, x39, x40,x41, x42, x43, x44, x46,
+            x47, x50,x51, x52, x54, x55, x56,
+            x57, x58, x59, x64,
+            x68, x69, x70])
+
+        masks_aug.extend([
+            y0, y2, y3, y5, y6,
+            y7, y8, y9, y10, y12,
+            y13, y14, y16, y17, y18, y19, y20, y21, y22, y23, y24, y25, y26,
+            y29, y30, y31, y32, y33, y34, y35, y36,
+            y37, y38, y39, y40, y41, y42, y43, y44, y46,
+            y47, y50, y51, y52, y54, y55, y56,
+            y57, y58, y59, y64,
+            y68, y69, y70])
+
+        idx = 0
+        image_name = []
+        masks_name = []
+        for i, m in zip(images_aug, masks_aug):
+            tmp_image_name = f"{image_name}_{smalllist[idx]}"
+            tmp_mask_name  = f"{mask_name}_{smalllist[idx]}"
+            image_name.extend(tmp_image_name)
+            masks_name.extend(tmp_mask_name)
+            idx += 1
+
+        it = iter(image_name)
+        it2 = iter(images_aug)
+        imagedict = dict(zip(it, it2))
+        
+        it = iter(masks_name)
+        it2 = iter(masks_aug)
+        masksdict = dict(zip(it, it2))
+
+    return imagedict, masksdict
