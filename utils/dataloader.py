@@ -55,8 +55,8 @@ class Dataset_Image_mask(Dataset):
         mask_2d = utils.mask_rle_to_2d(mask_rle, 512, 512)
         #augment image for training
         if self.transform is not None:
-            img = self.transform(img)
-            mask_2d = self.transform(mask_2d)
+            img, mask_2d = self.transform(img, mask_2d)
+            #mask_2d = self.transform(mask_2d)
         
         img = self.normalize(transforms.ToTensor()(img))
         mask = torch.from_numpy(mask_2d).long()
