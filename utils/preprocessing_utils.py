@@ -432,11 +432,32 @@ from albumentations import (
 )
 
 import albumentations
+import random
 
-def transform(image, mask): 
+
+def transform(image, mask, image_name,mask_name): 
     
 
     x, y = image, mask
+    
+    rand = random.uniform(0, 1)
+    if(rand > 0.5):
+        
+        images_name = [f"{image_name}"]
+        masks_name = [f"{mask_name}"]
+        images_aug = [x]
+        masks_aug = [y]
+
+        it = iter(images_name)
+        it2 = iter(images_aug)
+        imagedict = dict(zip(it, it2))
+        
+        it = iter(masks_name)
+        it2 = iter(masks_aug)
+        masksdict = dict(zip(it, it2))
+        
+        return imagedict, masksdict
+    
     mask_density = np.count_nonzero(y)
 
         ## Augmenting only images with Gloms
@@ -445,7 +466,7 @@ def transform(image, mask):
             h, w, c = x.shape
         except Exception as e:
             image = image[:-1]
-            x, y = read_single(image, mask)
+            x, y = image, mask
             h, w, c = x.shape
 
         aug = Blur(p=1, blur_limit = 3)
@@ -789,7 +810,7 @@ def transform(image, mask):
         y70 = augmented['mask']
 
         images_aug.extend([
-            x0, x2, x3, x5, x6,
+            x, x0, x2, x3, x5, x6,
             x7, x8, x9, x10, x12,
             x13, x14, x16, x17, x18, x19, x20,x21, x22,
             x23, x24, x25, x26, x29, x30,x31, x32, x33, x34, x35, x36,
@@ -799,7 +820,7 @@ def transform(image, mask):
             x68, x69, x70])
 
         masks_aug.extend([
-            y0, y2, y3, y5, y6,
+            y, y0, y2, y3, y5, y6,
             y7, y8, y9, y10, y12,
             y13, y14, y16, y17, y18, y19, y20, y21, y22, y23, y24, y25, y26,
             y29, y30, y31, y32, y33, y34, y35, y36,
@@ -808,17 +829,21 @@ def transform(image, mask):
             y57, y58, y59, y64,
             y68, y69, y70])
 
-        idx = 0
-        image_name = []
+        idx = -1
+        images_name = []
         masks_name = []
         for i, m in zip(images_aug, masks_aug):
-            tmp_image_name = f"{image_name}_{smalllist[idx]}"
-            tmp_mask_name  = f"{mask_name}_{smalllist[idx]}"
-            image_name.extend(tmp_image_name)
+            if idx == -1:
+                tmp_image_name = f"{image_name}"
+                tmp_mask_name  = f"{mask_name}"
+            else:
+                tmp_image_name = f"{image_name}_{smalllist[idx]}"
+                tmp_mask_name  = f"{mask_name}_{smalllist[idx]}"
+            images_name.extend(tmp_image_name)
             masks_name.extend(tmp_mask_name)
             idx += 1
 
-        it = iter(image_name)
+        it = iter(images_name)
         it2 = iter(images_aug)
         imagedict = dict(zip(it, it2))
         
