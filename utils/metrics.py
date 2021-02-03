@@ -31,5 +31,14 @@ class AverageMeter(object):
         self.count += weight
         self.avg = self.sum / self.count
 
+def metric_dice_iou(output, target, smooth = 0.005):
+        tp = (output * target).sum(axis=(1,2)) #intersection
+        fp = (output * (1.0 - target)).sum(axis=(1,2)) #false positives
+        fn = ((1.0 - output) * target).sum(axis=(1,2)) #false negatives
+        dice = np.mean((2.0 * tp + smooth) / (2 * tp + fp + fn + smooth))
+        iou = np.mean((tp + smooth) / (tp + fp + fn + smooth))
+
+        return dice, iou
+
 
 

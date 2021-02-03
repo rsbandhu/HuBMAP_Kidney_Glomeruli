@@ -34,6 +34,49 @@ def loss_fn(y_pred, y_target, ratio_dice_bce):
 
     return loss
 
+def loss_focal_dice(y_pred, y_target, alpha, gamma,  ratio_focal_dice, reduction="mean"):
+
+    assert ratio_focal_dice <= 1.0, "ration of dice loss to focal loss should be less than or equal to 1"
+    assert ratio_focal_dice >= 0.0, "ration of dice loss to focal loss should be greater than or equal to 1"
+    assert alpha <= 1.0, "alpha for focal loss should be less than or equal to 1"
+    assert alpha <= 1.0, "alpha focal loss should be greater than or equal to 0"
+
+    dice_loss = SoftDiceLoss( smooth=1.0 )
+    dice = dice_loss(y_pred.sigmoid(), y_target)
+
+    focal_loss = Focal_binary_loss(alpha, gamma, reduction)(y_pred, y_target)
+
+    loss = focal_loss * ratio_focal_dice + (1.0- ratio_focal_dice)*dice
+
+    return loss
+
+class Focal_binary_loss(nn.Module):
+    def __init__(self, alpha, gamma, reduction = None):
+        super(Focal_binary_loss, self).__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+        self.reduction = reduction
+
+    def forward(self, y_pred, y_true):
+        y_pred = y_pred.sigmoid() #inputs are logits for binary mask
+        pos_preds = torch.where(y_true == 1, y_pred, torch.ones_like(y_pred))
+        neg_preds = torch.where(y_true == 0, y_pred, torch.zeros_like(y_pred))
+
+        pos_factor = self.alpha * (1-pos_preds)**self.gamma
+        neg_factor = (1.0 -self.alpha)*(neg_preds**self.gamma)
+
+        ce_pos = -pos_factor * torch.log(pos_preds)
+        ce_neg = - neg_factor * torch.log(1-neg_preds)
+
+        loss = ce_pos + ce_neg
+
+        if self.reduction is None:
+            return loss
+        if self.reduction == "mean":
+            return loss.mean()
+        if self.reduction == "sum":
+            return loss.sum()
+
 def use_optimizer(network, config):
     optim_params = config["optimizer"]
     if optim_params["type"] == 'sgd':

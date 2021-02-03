@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm
 import json
 from torch.utils.data import DataLoader
+import torchvision
 
 from base.base_trainer import BaseTrainer
 from utils import dataloader, loss, metrics
@@ -37,7 +38,9 @@ class Trainer(BaseTrainer):
             img = img.to(self.device)
             mask = mask.to(self.device)
             #img = img.transpose((0,3,1,2))
-            out = torch.squeeze(self.model(img), 1)
+            model_out = self.model(img)['out'] #this line is for deeplabV3 from torchvision
+            out = torch.squeeze(model_out, 1)
+            #out = torch.squeeze(self.model(img), 1)
             
             train_loss = self.loss(out, mask, self.bce_dice_ratio)
             self.total_loss.update(train_loss.item(), batch_size)
@@ -85,6 +88,7 @@ def main():
     root_dir = 'C:\Scripts\hubmap\code'
 
     data_dir = 'C:\Scripts\hubmap\\train\\tiled_thresholded_512'
+    data_dir = '/media/bony/Ganga_HDD_3TB/Ganges_Backup/Machine_Learning/HuBMAP_Hacking_Kidney/hubmap-kidney-segmentation/train/tiled_thresholded_512'
 
     mean = [0.68912, 0.47454, 0.6486]
     std_dev = [0.13275, 0.23647, 0.15536]
@@ -110,7 +114,9 @@ def main():
     test_ds = torch.utils.data.Subset(dataset, test_idx)
 
 
-    model = unet.UNet()
+    #model = unet.UNet()
+    model = torchvision.models.segmentation.deeplabv3_resnet50(
+        pretrained=False, progress=True, num_classes=1, aux_loss=None)
 
     config = json.load(open('config.json'))
     b_size = config["train_loader"]["args"]["batch_size"]
